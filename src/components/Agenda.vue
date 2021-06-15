@@ -17,13 +17,13 @@
       <div class="col-xs-12 col-sm-12 col-md-8 col-lg-5">
         <div class="input-group flex-nowrap">
           <span class="input-group-text" id="addon-wrapping"></span>
-          <input type="text" v-model="this.contact.phone" class="form-control" placeholder="Phone" />
+          <input type="text" v-model="this.contact.phone" @keyup.enter="createContact()" class="form-control" placeholder="Phone" />
         </div>
       </div>
     </div>
     <div class="row center-xs mt-40">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <button type="button" class="btn btn-primary" @click="createContact()">{{ !edit ? 'Add Contact' : 'Finish Edit' }}</button>
+        <button type="button" class="btn btn-primary" :disabled="!isCorrect" @click="createContact()">{{ !edit ? 'Add Contact' : 'Finish Edit' }}</button>
       </div>
     </div>
     <div class="row center-xs mt-40">
@@ -48,26 +48,25 @@ export default {
         name: '',
         phone: '',
       },
-      edit: false,
       contacts: [{ name: 'Luis Carrillo', phone: '8711001907' }],
     };
   },
+  computed: {
+    isCorrect(){
+      return (this.contact.name !== '' && this.contact.phone !== '');
+    }
+  },
   methods: {
-    createContact(idx) {
+    createContact() {
       const newContact = { ...this.contact };
       
-      if(!this.edit){
-        this.contacts.push(newContact);
-      }else{
-        this.contacts[idx] = newContact;
-        this.edit = false;
-      }
+      this.contacts.push(newContact);
 
       this.contact = { name: '', phone: '' };
     },
     editContact(idx) {
       this.contact = this.contacts[idx];
-      this.edit = true;
+      this.contacts.splice(idx, 1)
     },
     deleteContact(idx) {
       this.contacts.splice(idx, 1);
